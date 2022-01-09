@@ -8,8 +8,9 @@ const busRecSchema = new Schema({
         ref: "Bus",
         
     },
+    name:String,
     seats: Number,
-    booked: Number,
+    booked: { type: Number, default: 0 },
 })
 
 const recordSchema = new Schema({

@@ -1,10 +1,12 @@
 const Bus = require("../models/bus");
 const Record = require("../models/record");
 
+//create
+
 exports.addRecord = (req, res) => {
     date = req.body.date;
     Bus.find()
-        .select("_id seats booked")
+        .select("_id seats booked name")
         .then((results) => {
             const rec = new Record({
                 _id: date,
@@ -13,9 +15,30 @@ exports.addRecord = (req, res) => {
 
             rec.save((err, data) => {
                 if (err) {
-                    res.status(422).json({error: "Record already exists!"});
+                    res.status(422).json({error: "Error adding to record"});
                 }
                 res.send(data);
             });
         });
 };
+
+
+// read
+exports.getRecordbyID = (req, res) => {
+    const id = req.body._id + "T00:00:00.000Z"
+    Record.find({ _id: id }).exec((err, data) => {
+        if (err) {
+            return res.status(400).json(err)
+        }
+        res.send(data)
+    })
+}
+
+exports
+
+// update
+exports.updateRecord = (req, res) => {
+    const { date, bus, seats, booked } = req.body
+}
+
+//delete

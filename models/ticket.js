@@ -31,10 +31,3 @@ const Ticket = mongoose.model("Ticket", ticketSchema)
 module.exports = { Ticket, Booking }
 
 
-const _1 = new bookingSchema({
-    
-})
-
-const tick = new ticketSchema({
-    booked:[]
-})

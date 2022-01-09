@@ -1,8 +1,10 @@
-const express = require("express")
-const router = express.Router()
-const{addRecord} = require('../controllers/record')
+const express = require("express");
+const router = express.Router();
+const { addRecord, getRecordbyID } = require("../controllers/record");
 
 
-router.post("/addrecord", addRecord)
 
-module.exports = router
+router.post("/addrecord", addRecord);
+router.get("/getrecord", getRecordbyID);
+
+module.exports = router;

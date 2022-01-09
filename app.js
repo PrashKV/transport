@@ -25,12 +25,11 @@ app.use(cors());
 const authRoutes = require("./routes/auth");
 const busRoutes = require("./routes/bus");
 const recordRoutes = require("./routes/record")
-// app.get("/", (req, res) => {
-//     res.send("Home page");
-// });
+const userRoutes = require("./routes/user");
 
 //Routes
 app.use("/api", authRoutes);
+app.use("/api", userRoutes);
 app.use("/api", busRoutes)
 app.use("/api", recordRoutes)
 const port = process.env.PORT || 8000;
