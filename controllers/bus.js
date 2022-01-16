@@ -1,6 +1,20 @@
 const formidable = require("formidable");
 const Bus = require("../models/bus");
 
+//middleware
+exports.getBusById = (req, res, next, id) => {
+    Bus.findById(id).exec((err, bus) => {
+        if (err) {
+            return res.status(400).json({
+                error: "bus wasn't found in db",
+            });
+        }
+        req.bus = bus;
+        next();
+    });
+};
+
+//create route
 exports.createBus = (req, res) => {
     let form = new formidable.IncomingForm();
     form.parse(req, (err, fields) => {
@@ -54,6 +68,9 @@ exports.createBus = (req, res) => {
     });
 };
 
+exports.getBus = (req, res) => {
+    return res.json(req.bus);
+};
 exports.getAllBusRoutes = (req, res) => {
     Bus.find()
         .select("-_id")
@@ -65,18 +82,26 @@ exports.getAllBusRoutes = (req, res) => {
         });
 };
 
-exports.getBusById = (req, res, next, id) => {
-    Bus.findById(id).exec((err, bus) => {
-        if (err) {
-            return res.status(400).json({
-                error: "bus wasn't found in db",
-            });
-        }
-        req.bus = bus;
-        next();
-    });
-};
 
-exports.getBus = (req, res) => {
-    return res.json(req.bus);
-};
+
+exports.updateBusRoute = (req, res) => {
+    Bus.findByIdAndUpdate(
+        { _id: req.bus._id },
+        { $set: req.body },
+        { new: true, useFindAndModify: false },
+        (err, bus) => {
+            if (err || !bus) {
+                return res.status(400).json({
+                    error: "You are not authorized to update"
+                })
+            }
+            // user.salt = undefined;
+            // user.encry_password = undefined;
+            // user.createdAt = user.updatedAt = undefined;
+            res.json(bus)
+        }
+    )
+}
+exports.deleteBus = (req, res) => {
+    
+}

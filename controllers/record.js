@@ -34,7 +34,14 @@ exports.getRecordbyID = (req, res) => {
     })
 }
 
-exports
+exports.getAllRecords = (req, res) => {
+    Record.find().exec((err,data) => {
+        if (err) {
+            return res.status(400).json(err)
+        }
+        res.send
+    })
+}
 
 // update
 exports.updateRecord = (req, res) => {

@@ -16786,23 +16786,25 @@ module.exports = L.Routing = {
 
 			this._routes = routes;
 
-			for (i = 0; i < this._routes.length; i++) {
+            for (i = 0; i < this._routes.length; i++) {
+                console.log(this._routes.length)
 				alt = this._routes[i];
 				altDiv = this._createAlternative(alt, i);
 				this._altContainer.appendChild(altDiv);
 				this._altElements.push(altDiv);
 			}
-        // var min = 999999;
-        // var index = 0;
-        // for (var i = 0; i < routes.length; i++) {
-        //     if (min > routes[i].summary.totalDistance) {
-        //         min = routes[i].summary.totalDistance;
-        //         index = i;
-        //     }
-        // }
-            
-            console.log("testinnnhhh", this._routes)
-			this._selectRoute({route:this._routes[0] , alternatives: this._routes.slice(1)});
+        var min = 999999;
+        var index = 0;
+        for (var i = 0; i < routes.length; i++) {
+            if (min > routes[i].summary.totalDistance) {
+                console.log(routes[i].summary.totalDistance)
+                min = routes[i].summary.totalDistance;
+                index = i;
+            }
+        }
+            console.log(this._routes[index])
+            //console.log("testinnnhhh", this._routes)
+			this._selectRoute({route:this._routes[index] , alternatives: this._routes.slice(1)});
 
 			return this;
 		},
