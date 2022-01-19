@@ -8,6 +8,9 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 
+function juice(params) {
+    console.log("juice")
+}
 var source = new L.esri.Controls.Geosearch({ expanded: true }).addTo(map);
 var destination = new L.esri.Controls.Geosearch({
     expanded: true,
@@ -19,7 +22,6 @@ var results = new L.LayerGroup().addTo(map);
 var source_info;
 var dest_info;
 source.on("results", function (data) {
-    
     results.clearLayers();
     for (var i = data.results.length - 1; i >= 0; i--) {
         source_info = data.results[i];
@@ -44,7 +46,7 @@ destination.on("results", function (data) {
             L.latLng(dest_info.latlng.lat, dest_info.latlng.lng),
         ],
         lineOptions: {
-            styles: [{ color: "red", opacity: .5, weight: 10 }],
+            styles: [{ color: "red", opacity: 0.5, weight: 10 }],
         },
         // hide: true,
         // showAlternatives:true
@@ -52,7 +54,7 @@ destination.on("results", function (data) {
         // geocoder: L.Control.Geocoder.nominatim()
     });
 
-    // u._updateLines = function () {};
+    u._updateLines = function () {};
     u.on("routeselected", function (e) {
         console.log(
             L.latLng(source_info.latlng.lat, source_info.latlng.lng).distanceTo(
@@ -70,14 +72,7 @@ destination.on("results", function (data) {
             fetch("http://localhost:8000/api/bus/getbuses")
                 .then((response) => response.json())
                 .then((data) => {
-                    // console.log(
-                    //     parseFloat(
-                    //         JSON.stringify(data[0].destination.lng).split(
-                    //             '"'
-                    //         )[3]
-                    //     ) - 1
-                    // );
-                    // console.log(data)
+                    console.log(data)
                     data.forEach((bus) => {
                         // console.log(bus)
                         min_s = 9999999;
@@ -190,7 +185,7 @@ destination.on("results", function (data) {
             return 0;
         });
         f = getAllSubsets(sorted);
-       
+
         minimum_cost = Number.MAX_SAFE_INTEGER;
         final_array = [];
         selected_index = 0;
@@ -291,7 +286,7 @@ destination.on("results", function (data) {
         if (f.length !== 1) {
             for (i = 0; i < f[selected_index].length; i++) {
                 // console.log(f[selected_index][i]);
-                
+
                 coordi = getLatLng(f[selected_index][i]);
                 //console.log(coordi)
                 _waypoints.push(L.latLng(coordi[0], coordi[1]));
@@ -299,6 +294,7 @@ destination.on("results", function (data) {
             }
         }
         _waypoints.push(L.latLng(dest_info.latlng.lat, dest_info.latlng.lng));
+        console.log(_waypoints)
         var u1 = L.Routing.control({
             waypoints: _waypoints,
             lineOptions: {
@@ -309,7 +305,7 @@ destination.on("results", function (data) {
             routeWhileDragging: false,
             // geocoder: L.Control.Geocoder.nominatim()
         }).addTo(map);
-        u1.onAdd(map);
+        // u1.onAdd(map);
     };
 });
 
@@ -327,3 +323,10 @@ function getLatLng(bus) {
     y2 = parseFloat(JSON.stringify(bus.source.lng).split('"')[3]);
     return [x2, y2, x1, y1];
 }
+
+
+fetch("http://localhost:8000/api/bus/getbuses")
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data)
+    })
