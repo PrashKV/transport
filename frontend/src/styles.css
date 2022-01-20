@@ -1,5 +1,6 @@
 body {
     margin: 0px;
+    /* background-color: #041C32; */
 }
 
 #map {
@@ -36,27 +37,33 @@ body {
 .wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 2px;
+    height: 0vh;
     /* grid-auto-rows: minmax(100px, auto); */
 }
 
 .one {
     grid-column: 1/3;
     /* grid-row: 2/8; */
-    margin: 3%;
-    /* margin-bottom: 5%; */
-    height: 91vh;
+    
+    margin: 3vh;
+    margin-bottom: 3vh;
+    height: 88vh;
+    border-radius: 1%;
 }
 
 .two {
-    /* height:100vh; */
-    background-color: rgba(0, 255, 213, 0.089);
-    overflow: scroll;
-   
+    height: 100%;
+    
+    
+    overflow: auto;
+    /* margin:auto 0; */
     grid-column: 3;
     /* grid-row: 1/8; */
 }
-
+.marg{
+    margin:auto 0;
+}
 .taxi {
     border-radius: 25px;
     border: 2px solid #a89804;
@@ -76,25 +83,25 @@ body {
 
 .price {
     font-weight: bolder;
-    font-size: larger;
+    /* font-size: larger; */
 }
 
 .App {
     text-align: center;
-  }
-  
-  .App-logo {
+}
+
+.App-logo {
     height: 40vmin;
     pointer-events: none;
-  }
-  
-  @media (prefers-reduced-motion: no-preference) {
+}
+
+@media (prefers-reduced-motion: no-preference) {
     .App-logo {
-      animation: App-logo-spin infinite 20s linear;
+        animation: App-logo-spin infinite 20s linear;
     }
-  }
-  
-  .App-header {
+}
+
+.App-header {
     background-color: #282c34;
     min-height: 100vh;
     display: flex;
@@ -103,19 +110,24 @@ body {
     justify-content: center;
     font-size: calc(10px + 2vmin);
     color: white;
-  }
-  
-  .App-link {
+}
+
+.App-link {
     color: #61dafb;
-  }
-  
-  @keyframes App-logo-spin {
+}
+
+@keyframes App-logo-spin {
     from {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
     }
+
     to {
-      transform: rotate(360deg);
+        transform: rotate(360deg);
     }
-  }
-  
-  
+}
+
+.boxx {
+    /* border-color: #FFF3FF; */
+    border-width: 3px;
+
+}

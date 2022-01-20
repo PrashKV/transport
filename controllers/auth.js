@@ -13,13 +13,14 @@ exports.signup = (req, res) => {
         });
     }
     const user = new User(req.body);
-    console.log(user.name)
+    // console.log(user)
     user.save((err, user) => {
         if (err) {
             return res.status(400).json({
-                err: err,
+                error: "Account with same email already exists, try signing in"
             });
         }
+        console.log("user saved",user)
         res.json({
             name: user.name,
             email: user.email,
@@ -34,7 +35,7 @@ exports.signin = (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({
-            error: errors.array(),
+            error: errors.array()[0].msg,
         });
     }
 
