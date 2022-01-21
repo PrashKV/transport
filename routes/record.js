@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { addRecord, getRecordbyID , getAllRecords} = require("../controllers/record");
-
+const {check} = require("express-validator")
 const { isSignedIn, isAuthenticated, isAdmin } = require("../controllers/auth");
 const { getUserById } = require("../controllers/user");
 
@@ -13,6 +13,7 @@ router.post(
     isSignedIn,
     isAuthenticated,
     isAdmin,
+    [check("date").isDate().withMessage("Date pattern incorrect")],
     addRecord
 );
 

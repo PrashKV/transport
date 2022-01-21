@@ -16,6 +16,8 @@ import PrivateRoute from "./auth/helper/PrivateRoute"
 import AdminRoute from "./auth/helper/AdminRoute";
 import AdminDashBoard from "./user/AdminDashBoard";
 import UserDashBoard from "./user/UserDashBoard";
+import AddBus from "./admin/AddBus";
+import AddRecord from "./admin/AddRecord";
 
 function App() {
     return (
@@ -26,6 +28,8 @@ function App() {
                     <Route path="/signin" component={Signin} />
                     <Route path="/signup" component={Signup} />
                     <AdminRoute path="/admin/dashboard" exact component={AdminDashBoard} />
+                    <AdminRoute path="/admin/create/bus" exact component={AddBus} />
+                    <AdminRoute path="/admin/create/record" exact component={AddRecord} />
                     <PrivateRoute path="/user/dashboard" exact component={UserDashBoard}/>
                 </Switch>
             </BrowserRouter>

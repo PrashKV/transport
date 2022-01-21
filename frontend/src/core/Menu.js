@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { isAutheticated, signout } from "../auth/helper";
+import { isAuthenticated, signout } from "../auth/helper";
 
 const currentTab = (history, path) => {
     if (history.location.pathname === path) {
@@ -31,45 +31,50 @@ const Menu = ({ history }) => (
                     Tickets
                 </Link>
             </li>
-            <li className="nav-item">
-                <Link
-                    style={currentTab(history, "/user/dashboard")}
-                    className="nav-link"
-                    to="/user/dashboard"
-                >
-                    Dashboard
-                </Link>
-            </li>
-            <li className="nav-item">
-                <Link
-                    style={currentTab(history, "/admin/dashboard")}
-                    className="nav-link"
-                    to="/admin/dashboard"
-                >
-                    A. Dashboard
-                </Link>
-            </li>
-            {!isAutheticated()&&(<Fragment>
+            {isAuthenticated() && isAuthenticated().user.role === 0 && (
                 <li className="nav-item">
                     <Link
-                        style={currentTab(history, "/signup")}
+                        style={currentTab(history, "/user/dashboard")}
                         className="nav-link"
-                        to="/signup"
+                        to="/user/dashboard"
                     >
-                        Sign Up
+                        Dashboard
                     </Link>
-                </li>
+                </li>)}
+            {isAuthenticated() && isAuthenticated().user.role === 1 && (
                 <li className="nav-item">
                     <Link
-                        style={currentTab(history, "/signin")}
+                        style={currentTab(history, "/admin/dashboard")}
                         className="nav-link"
-                        to="/signin"
+                        to="/admin/dashboard"
                     >
-                        Sign In
+                        A. Dashboard
                     </Link>
                 </li>
-            </Fragment>)}
-            {isAutheticated() && (
+            )}
+            {!isAuthenticated() && (
+                <Fragment>
+                    <li className="nav-item">
+                        <Link
+                            style={currentTab(history, "/signup")}
+                            className="nav-link"
+                            to="/signup"
+                        >
+                            Sign Up
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link
+                            style={currentTab(history, "/signin")}
+                            className="nav-link"
+                            to="/signin"
+                        >
+                            Sign In
+                        </Link>
+                    </li>
+                </Fragment>
+            )}
+            {isAuthenticated() && (
                 <li className="nav-item">
                     <span
                         className="nav-link text-info"

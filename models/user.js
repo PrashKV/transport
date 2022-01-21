@@ -12,11 +12,7 @@ var userSchema = new Schema(
             maxlength: 32,
             trim: true,
         },
-        lastname: {
-            type: String,
-            maxlength: 32,
-            trim: true,
-        },
+       
         email: {
             type: String,
             trim: true,

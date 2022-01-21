@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import Base from "../core/Base";
 import { Link, Redirect } from "react-router-dom";
 
-import { signin, authenticate, isAutheticated } from "../auth/helper"
+import { signin, authenticate, isAuthenticated } from "../auth/helper"
 
 const Signin = () => {
 
 
     const [values, setValues] = useState({
-        email: "user@g.com",
+        email: "admin@mail.com",
         password: "12345",
         error: "",
         loading: false,
@@ -17,7 +17,7 @@ const Signin = () => {
 
     const { email, password, error, loading, didRedirect } = values
     
-    const { user } = isAutheticated()
+    const { user } = isAuthenticated()
 
     const handleChange = (name) => (event) => {
         setValues({ ...values, error: false, [name]: event.target.value });
@@ -44,13 +44,13 @@ const Signin = () => {
     const performRedirect = () => {
         if (didRedirect) {
             if (user && user.role === 1) {
-                return (<p>Redirect to admin</p>)
+                return <Redirect to="/admin/dashboard"/>
             }
             else {
-                return (<div><p>redirect to user dashboard</p>{JSON.stringify(user)}</div>)
+                return <Redirect to="/user/dashboard"/>
             }
         }
-        // if (isAutheticated()) {
+        // if (isAuthenticated()) {
         //     return <Redirect to="/"/>
         // }
     }
@@ -111,6 +111,7 @@ const Signin = () => {
             {errorMessage()}
             {signInForm()}
             {performRedirect()}
+            <p className="text-secondary">New user? <Link  to="/signup" style={{textDecoration:"none"}}>Sign up here</Link></p>
             <p className="text-center">{JSON.stringify(values)}</p>
         </Base>
     );

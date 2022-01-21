@@ -5,6 +5,8 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "../styles.css";
 import "leaflet-routing-machine";
 import Menu from "./Menu";
+import { isAuthenticated } from "../auth/helper";
+
 // import marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -23,6 +25,7 @@ class MapComp extends Component {
 
         this.state = {
             final: [],
+            doj: "",
             amt: 0,
             taxi: 0,
             bus: 0,
@@ -130,13 +133,7 @@ class MapComp extends Component {
                 u._updateLines = function () {};
                 u.on("routeselected", function (e) {
                     routeselected.clearLayers();
-                    console.log(
-                        L.latLng(
-                            source_info.latlng.lat,
-                            source_info.latlng.lng
-                        ).distanceTo(L.latLng(14.167, 75.0403))
-                    );
-                    console.log(source_info, dest_info);
+
                     var coordinates = e.route.coordinates;
                     var nearbuses = [];
 
@@ -385,7 +382,6 @@ class MapComp extends Component {
                     this.setState({ final: final_array });
                     this.setState({ success: 1 });
 
-                    console.log(this.state.final, this.state.amt);
                     var _waypoints = [];
 
                     _waypoints.push(
@@ -405,7 +401,7 @@ class MapComp extends Component {
                     _waypoints.push(
                         L.latLng(dest_info.latlng.lat, dest_info.latlng.lng)
                     );
-                    console.log(_waypoints);
+                    // console.log(_waypoints);
                     //  map.removeControl(u)
                     routeselected.clearLayers();
 
@@ -437,27 +433,44 @@ class MapComp extends Component {
 
     go(e) {
         e.preventDefault();
-        let date = document.querySelector("#doj");
-        let seats = document.querySelector("#seats");
 
-        // console.log(props.data, date.value, seats.value)
-        let text = `DOJ=${date.value}\nSeats=${seats.value}\nTotal cost = ${
-            this.state.taxi * Math.ceil(this.state.seats / 4) +
-            this.state.bus * this.state.seats
-        }\nCONFIRM?`;
+        if (!isAuthenticated()) {
+            if (
+                window.confirm(
+                    "Booking tickets require signing in, would you like to be redirected?"
+                )
+            ) {
+                window.location = "/signin";
+            } else {
+                alert("Please signin before booking tickets!");
+            }
+        } else {
+            let text = `DOJ=${this.state.doj}\nSeats=${
+                this.state.seats
+            }\nTotal cost = ${
+                this.state.taxi * Math.ceil(this.state.seats / 4) +
+                this.state.bus * this.state.seats
+            }\nCONFIRM?`;
 
-        if (window.confirm(text) && seats.value > 0 && date.value) {
-            window.location.href = "http://www.w3schools.com";
-        }
-        if (!(seats.value > 0 && date.value)) {
-            alert("Please ensure that all details are provided");
+            if (
+                window.confirm(text) &&
+                this.state.seats > 0 &&
+                this.state.doj
+            ) {
+                window.location.href = "/tickets";
+            }
         }
     }
-    handleChange(event) {
-        this.setState({ seats: event.target.value });
-    }
+    min_date = () => {
+        var dateobj = new Date();
+        dateobj.setDate(new Date().getDate() + 1);
+        console.log(dateobj.toISOString().split("T")[0]);
+        return dateobj.toISOString().split("T")[0];
+    };
+    handleChange = (name) => (event) => {
+        this.setState({ [name]: event.target.value });
+    };
     render() {
-        console.log("render");
         const center = [14.167, 75.0403];
         return (
             <div>
@@ -466,7 +479,6 @@ class MapComp extends Component {
                     <MapContainer
                         whenCreated={(mapInstance) => {
                             this.mapRef = mapInstance;
-                            console.log(this.mapRef);
                         }}
                         // style={{ height: "100vh", width: "100%" }}
                         className="one"
@@ -483,158 +495,169 @@ class MapComp extends Component {
                     </MapContainer>
                     <div className="two d-flex align-items-center justify-content-center ">
                         <div className="marg">
-                         
-                      
-                        <h3 >
-                            Total cost : ₹
-                            <span className="text-success">
-                                {this.state.taxi *
-                                    Math.ceil(this.state.seats / 4) +
-                                    this.state.bus * this.state.seats}
-                            </span>
-                        </h3>
-                        {/* <div class="container bg-success"> */}
-                        {this.state.source !== "" ? (
-                           <div> <h3>
-                                {this.state.source} 
-                                
-                                </h3>
-                                <span>to</span></div>
-                        ) : (
-                            <div>
-                                <div class="row align-items-center">
-                                    <h3 class="col-md-12">
-                                        Choose Source and Destination
-                                    </h3>
+                            <h3>
+                                Total cost : ₹
+                                <span className="text-success">
+                                    {this.state.taxi *
+                                        Math.ceil(this.state.seats / 4) +
+                                        this.state.bus * this.state.seats}
+                                </span>
+                            </h3>
+
+                            {this.state.source !== "" ? (
+                                <div>
+                                    {" "}
+                                    <h3>{this.state.source}</h3>
+                                    <span>to</span>
                                 </div>
-                            </div>
-                        )}
-
-                        <h3>{this.state.destination}</h3>
-                        <div>
-                            {this.state.success ? (
-                                <form onSubmit={this.go}>
-                                    {/* <div className="container"> */}
-                                    <div className="row mx-3">
-                                        <div className="col">
-                                            <div className="form-group ">
-                                                <label>DOJ:</label>
-                                                <input
-                                                    className="form-control"
-                                                    type="date"
-                                                    id="doj"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="form-group">
-                                                <label>Seats:</label>
-                                                <input
-                                                    type="number"
-                                                    className="form-control"
-                                                    id="seats"
-                                                    value={this.state.seats}
-                                                    onChange={this.handleChange}
-                                                    min="1"
-                                                />
-                                            </div>
-                                        </div>
+                            ) : (
+                                <div>
+                                    <div className="row align-items-center">
+                                        <h3 className="col-md-12">
+                                            Choose Source and Destination
+                                        </h3>
                                     </div>
-                                    {this.state.final.map((data) => (
-                                        <div>
-                                            {data.name === "taxi" ? (
-                                                <div className="taxi my-3">
-                                                    <h3>
-                                                        {data.name.toUpperCase()}
-                                                    </h3>
-                                                    <div className="container">
-                                                        <div className="row ">
-                                                            <div className="col-5 adr">
-                                                                {data.from}
-                                                            </div>
-                                                            <div className="col-2">
-                                                                To
-                                                            </div>
-                                                            <div className="col-5 adr">
-                                                                {data.to}
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-3 ms-2">
-                                                            <span>
-                                                                {Math.ceil(
-                                                                    this.state
-                                                                        .seats /
-                                                                        4
-                                                                )}{" "}
-                                                                * ₹{data.price}{" "}
-                                                                :{" "}
-                                                            </span>
-                                                        </div>
-                                                        <h4 className="price">
-                                                            ₹
-                                                            {data.price *
-                                                                Math.ceil(
-                                                                    this.state
-                                                                        .seats /
-                                                                        4
-                                                                )}
-                                                        </h4>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="bus">
-                                                    <h3>{data.name}</h3>
-                                                    <div className="container">
-                                                        <div className="row align-middle">
-                                                            <div className="col-5 adr">
-                                                                {
-                                                                    data.source
-                                                                        .address
-                                                                }
-                                                            </div>
-                                                            <div className="col-2">
-                                                                To
-                                                            </div>
-                                                            <div className="col-5 adr">
-                                                                {
-                                                                    data
-                                                                        .destination
-                                                                        .address
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                        <div className="mt-3 ms-2">
-                                                            <span>
-                                                                {
-                                                                    this.state
-                                                                        .seats
-                                                                }{" "}
-                                                                * ₹{data.price}{" "}
-                                                                :
-                                                            </span>
-                                                        </div>
+                                </div>
+                            )}
 
-                                                        <h4 className="price">
-                                                            ₹
-                                                            {data.price *
-                                                                this.state
-                                                                    .seats}
-                                                        </h4>
-                                                    </div>
+                            <h3>{this.state.destination}</h3>
+                            <div>
+                                {this.state.success ? (
+                                    <form onSubmit={this.go}>
+                                        {/* <div className="container"> */}
+                                        <div className="row mx-3">
+                                            <div className="col">
+                                                <div className="form-group ">
+                                                    <label>DOJ:</label>
+                                                    <input
+                                                        className="form-control"
+                                                        type="date"
+                                                        id="doj"
+                                                        min={this.min_date()}
+                                                        onChange={this.handleChange(
+                                                            "doj"
+                                                        )}
+                                                        required
+                                                    />
                                                 </div>
-                                            )}
+                                            </div>
+                                            <div className="col">
+                                                <div className="form-group">
+                                                    <label>Seats:</label>
+                                                    <input
+                                                        type="number"
+                                                        className="form-control"
+                                                        id="seats"
+                                                        value={this.state.seats}
+                                                        onChange={this.handleChange(
+                                                            "seats"
+                                                        )}
+                                                        min="1"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
-                                    ))}
+                                        {this.state.final.map((data) => (
+                                            <div>
+                                                {data.name === "taxi" ? (
+                                                    <div className="taxi my-3">
+                                                        <h3>
+                                                            {data.name.toUpperCase()}
+                                                        </h3>
+                                                        <div className="container">
+                                                            <div className="row ">
+                                                                <div className="col-5 adr">
+                                                                    {data.from}
+                                                                </div>
+                                                                <div className="col-2">
+                                                                    To
+                                                                </div>
+                                                                <div className="col-5 adr">
+                                                                    {data.to}
+                                                                </div>
+                                                            </div>
+                                                            <div className="mt-3 ms-2">
+                                                                <span>
+                                                                    {Math.ceil(
+                                                                        this
+                                                                            .state
+                                                                            .seats /
+                                                                            4
+                                                                    )}{" "}
+                                                                    * ₹
+                                                                    {data.price}{" "}
+                                                                    :{" "}
+                                                                </span>
+                                                            </div>
+                                                            <h4 className="price">
+                                                                ₹
+                                                                {data.price *
+                                                                    Math.ceil(
+                                                                        this
+                                                                            .state
+                                                                            .seats /
+                                                                            4
+                                                                    )}
+                                                            </h4>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="bus">
+                                                        <h3>{data.name}</h3>
+                                                        <div className="container">
+                                                            <div className="row align-middle">
+                                                                <div className="col-5 adr">
+                                                                    {
+                                                                        data
+                                                                            .source
+                                                                            .address
+                                                                    }
+                                                                </div>
+                                                                <div className="col-2">
+                                                                    To
+                                                                </div>
+                                                                <div className="col-5 adr">
+                                                                    {
+                                                                        data
+                                                                            .destination
+                                                                            .address
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            <div className="mt-3 ms-2">
+                                                                <span>
+                                                                    {
+                                                                        this
+                                                                            .state
+                                                                            .seats
+                                                                    }{" "}
+                                                                    * ₹
+                                                                    {data.price}{" "}
+                                                                    :
+                                                                </span>
+                                                            </div>
 
-                                    <input
-                                        type="submit"
-                                        className="btn btn-success"
-                                        value="Book"
-                                    />
-                                </form>
-                            ) : null}
+                                                            <h4 className="price">
+                                                                ₹
+                                                                {data.price *
+                                                                    this.state
+                                                                        .seats}
+                                                            </h4>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+
+                                        <input
+                                            type="submit"
+                                            className="btn btn-success"
+                                            value="Book"
+                                        />
+                                    </form>
+                                ) : null}
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>

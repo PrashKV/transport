@@ -1,10 +1,20 @@
+const { validationResult } = require("express-validator");
 const Bus = require("../models/bus");
 const Record = require("../models/record");
 
 //create
 
 exports.addRecord = (req, res) => {
+
+
     date = req.body.date;
+
+    errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(422).json({
+            error: errors.array()[0].msg,
+        });
+    }
     Bus.find()
         .select("_id seats booked name")
         .then((results) => {
