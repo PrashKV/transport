@@ -2,14 +2,26 @@ const { validationResult } = require("express-validator");
 const Bus = require("../models/bus");
 const Record = require("../models/record");
 
+
+exports.getRecordById = (req, res, next, id) => {
+    
+    Record.findById(id).exec((err, record) => {
+        if (!record) {
+            return res.status(400).json({
+                error: "record wasn't found in db",
+            });
+        }
+        req.record = record;
+        next();
+    });
+};
+
 //create
 
 exports.addRecord = (req, res) => {
-
-
     date = req.body.date;
 
-    errors = validationResult(req)
+    errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({
             error: errors.array()[0].msg,
@@ -25,37 +37,26 @@ exports.addRecord = (req, res) => {
 
             rec.save((err, data) => {
                 if (err) {
-                    res.status(422).json({error: "Error adding to record"});
+                    res.status(422).json({ error: "Record already exists!" });
                 }
                 res.send(data);
             });
         });
 };
 
-
 // read
-exports.getRecordbyID = (req, res) => {
-    const id = req.body._id + "T00:00:00.000Z"
-    Record.find({ _id: id }).exec((err, data) => {
+
+
+exports.getAllRecordID = (req, res) => {
+    Record.find().select('-buses').sort([['_id',1]]).exec((err, data) => {
         if (err) {
-            return res.status(400).json(err)
+            return res.status(400).json(err);
         }
-        res.send(data)
-    })
-}
+        res.send(data);
+    });
+};
 
-exports.getAllRecords = (req, res) => {
-    Record.find().exec((err,data) => {
-        if (err) {
-            return res.status(400).json(err)
-        }
-        res.send
-    })
-}
 
-// update
-exports.updateRecord = (req, res) => {
-    const { date, bus, seats, booked } = req.body
+exports.getARecord = (req,res)=>{
+    return res.json(req.record.buses);
 }
-
-//delete

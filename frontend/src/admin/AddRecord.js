@@ -25,15 +25,18 @@ const AddRecord = () => {
     };
 
     const handleChange = (event) => {
-        console.log(Date.now());
-        setError("no error");
+        
+        setError("");
         setDate(event.target.value);
-
+        setSuccess(false)
         // console.log(new Date.now().toISOString())
     };
     const min_date = () => {
         var dateobj = new Date(Date.now());
-        console.log(dateobj.toISOString().split("T")[0]);
+        dateobj.setHours(new Date().getHours() + 5)
+        dateobj.setMinutes(new Date().getMinutes() + 30)
+        
+        
         return dateobj.toISOString().split("T")[0];
     };
     const onSubmit = (event) => {
@@ -42,10 +45,9 @@ const AddRecord = () => {
         setSuccess(false);
 
         //backend request
-
         createRecord(user._id, token, { date }).then((data) => {
             if (data.error) {
-                setError(true);
+                setError(data.error);
             } else {
                 setError("");
                 setSuccess(true);
@@ -53,6 +55,22 @@ const AddRecord = () => {
             }
         });
     };
+    const successmessage = () => {
+        return (
+            <div className="alert alert-success"
+                style={{ display: success ? "" : "none" }}>
+                Record Creation Successfull
+            </div>
+        )
+    }
+    const errorMessage = () => {
+        return (
+            <div className="alert alert-danger"
+                style={{ display: error ? "" : "none" }}>
+                {error} 
+            </div>
+        )
+    }
     const dateForm = () => {
         return (
             <form className="mx-5" onSubmit={onSubmit}>
@@ -85,11 +103,15 @@ const AddRecord = () => {
             description="Create new record to store information about booked seats in buses"
             className="container bg-info p-4 mt-5"
         >
-            <div className="row rounded">
+                
+                {errorMessage()}
+                    {successmessage()}
+            <div className="row">
                 <div className="">
                     {" "}
                     {dateForm()}
                     {goback()}
+                    
                     {error}
                     {success}
                     {date}

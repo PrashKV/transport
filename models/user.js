@@ -1,8 +1,8 @@
 var mongoose = require("mongoose");
 var crypto = require("crypto");
 var uuidv1 = require("uuid/v1");
-
-var Schema = mongoose.Schema;
+const { ObjectId } = mongoose.Schema
+const Schema = mongoose.Schema;
 
 var userSchema = new Schema(
     {
@@ -33,10 +33,10 @@ var userSchema = new Schema(
             type: Number,
             default: 0,
         },
-        tickets: {
-            type: Array,
-            default: [],
-        },
+        tickets: [{
+            type: ObjectId,
+            ref: "Ticket"
+        }],
     },
     { timestamps: true }
 );

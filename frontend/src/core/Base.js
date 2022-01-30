@@ -11,8 +11,8 @@ const Base = ({
     <Menu />
     <div className="container-fluid">
       <div className="jumbotron  text-center">
-        <h2 className="display-4 pt-5">{title}</h2>
-        <p className="lead pb-5">{description}</p>
+        <h2 className="display-4 pt-3">{title}</h2>
+        <p className="lead pb-2">{description}</p>
       </div>
       <div className={className}>{children}</div>
     </div>

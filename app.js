@@ -22,12 +22,13 @@ const authRoutes = require("./routes/auth");
 const busRoutes = require("./routes/bus");
 const recordRoutes = require("./routes/record");
 const userRoutes = require("./routes/user");
-
+const ticketRoutes = require("./routes/ticket")
 //Routes
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", busRoutes);
 app.use("/api", recordRoutes);
+app.use("/api",ticketRoutes)
 const port = process.env.PORT || 8000;
 
 app.listen(port, () => {

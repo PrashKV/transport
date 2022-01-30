@@ -2,36 +2,32 @@ var mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 var Schema = mongoose.Schema;
 
-var bookingSchema = new Schema({
-    bus: {
-        type: ObjectId,
-        ref: "Bus",
-    },
-    count: Number,
-    price: Number,
-});
 
-var taxiSchema = new Schema({
-    start: String,
-    end: String,
-    fare: Number,
-});
-
-// const Booking = mongoose.model("Booking", bookingSchema)
+const transportSchema = new Schema(
+    {
+        name: String,
+        source: String,
+        destination: String,
+        price:Number
+    }
+)
 
 const ticketSchema = new Schema(
     {
-        booked: [bookingSchema],
-        taxis: [taxiSchema],
-        amount: Number,
         user: {
             type: ObjectId,
-            ref: "User",
+            ref:"User"
         },
+        doj:Date,
+        seats: Number,
+        final: [transportSchema],
+        total: Number,
+        source: String,
+        destination: String
     },
     { timestamps: true }
 );
 
 const Ticket = mongoose.model("Ticket", ticketSchema);
 
-module.exports = { Ticket };
+module.exports = { Ticket, transportSchema };

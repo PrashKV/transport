@@ -8,8 +8,8 @@ const Signin = () => {
 
 
     const [values, setValues] = useState({
-        email: "admin@mail.com",
-        password: "12345",
+        email: "",
+        password: "",
         error: "",
         loading: false,
         didRedirect: false
@@ -50,9 +50,7 @@ const Signin = () => {
                 return <Redirect to="/user/dashboard"/>
             }
         }
-        // if (isAuthenticated()) {
-        //     return <Redirect to="/"/>
-        // }
+        
     }
     const loadingMessage = () => {
         return (
@@ -112,7 +110,7 @@ const Signin = () => {
             {signInForm()}
             {performRedirect()}
             <p className="text-secondary">New user? <Link  to="/signup" style={{textDecoration:"none"}}>Sign up here</Link></p>
-            <p className="text-center">{JSON.stringify(values)}</p>
+            
         </Base>
     );
 };

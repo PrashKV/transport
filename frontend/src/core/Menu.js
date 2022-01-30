@@ -22,15 +22,17 @@ const Menu = ({ history }) => (
                     Home
                 </Link>
             </li>
-            <li className="nav-item">
+            {isAuthenticated() && (
+                <li className="nav-item">
                 <Link
-                    style={currentTab(history, "/tickets")}
+                    style={currentTab(history, "/user/tickets")}
                     className="nav-link"
-                    to="/tickets"
+                    to="/user/tickets"
                 >
                     Tickets
                 </Link>
             </li>
+            )}
             {isAuthenticated() && isAuthenticated().user.role === 0 && (
                 <li className="nav-item">
                     <Link

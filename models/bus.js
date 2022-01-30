@@ -35,12 +35,8 @@ var busSchema = new Schema(
             type: Number,
             default:30
         },
-        // booked: {
-        //     type: Number,
-        //     default:0
-        // }
-    },
-    { timestamps: true }
+        
+    }
 );
 
 const Bus = mongoose.model("Bus", busSchema);

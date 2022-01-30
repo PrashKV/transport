@@ -91,7 +91,7 @@ exports.isSignedIn = expressJwt({
 exports.isAuthenticated = (req, res, next) => {
     //req.profile is set up from front end, req.auth is from 'isSignedIn'
     let checker = req.profile && req.auth && req.profile._id == req.auth._id;
-    console.log(req.profile, req.auth)
+    
     if (!checker) {
         return res.status(403).json({
             error: "Access denied in authentication!",

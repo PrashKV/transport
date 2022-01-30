@@ -16,8 +16,17 @@ import PrivateRoute from "./auth/helper/PrivateRoute"
 import AdminRoute from "./auth/helper/AdminRoute";
 import AdminDashBoard from "./user/AdminDashBoard";
 import UserDashBoard from "./user/UserDashBoard";
-import AddBus from "./admin/AddBus";
+
 import AddRecord from "./admin/AddRecord";
+import Tickets from "./user/Tickets"
+import CreateBus from "./admin/CreateBus";
+import ManageBus from "./admin/ManageBus";
+import ViewRecord from "./admin/ViewRecord";
+import ViewTickets from "./admin/ViewTickets";
+import UpdateBus from "./admin/UpdateBus";
+import OneDayRecord from "./admin/OneDayRecord";
+import UpdateUser from "./user/UpdateUser";
+
 
 function App() {
     return (
@@ -27,10 +36,17 @@ function App() {
                     <Route path="/" exact component={MapComp} />
                     <Route path="/signin" component={Signin} />
                     <Route path="/signup" component={Signup} />
-                    <AdminRoute path="/admin/dashboard" exact component={AdminDashBoard} />
-                    <AdminRoute path="/admin/create/bus" exact component={AddBus} />
+                    <AdminRoute path="/admin/dashboard" exact component={AdminDashBoard} />                   
                     <AdminRoute path="/admin/create/record" exact component={AddRecord} />
-                    <PrivateRoute path="/user/dashboard" exact component={UserDashBoard}/>
+                    <PrivateRoute path="/user/dashboard" exact component={UserDashBoard} />
+                    <PrivateRoute path="/user/tickets" exact component={Tickets} />
+                    <AdminRoute path="/admin/create/bus" exact component={CreateBus} />
+                    <AdminRoute path="/admin/bus/manage" component={ManageBus}/>
+                    <AdminRoute path="/records" component={ViewRecord}/>
+                    <AdminRoute path="/tickets" component={ViewTickets}/>
+                    <AdminRoute path="/admin/bus/update/:busId" component={UpdateBus}/>
+                    <PrivateRoute path="/user/edit" component={UpdateUser}/>
+                    <AdminRoute path="/admin/record/:recordId" component={OneDayRecord}/>
                 </Switch>
             </BrowserRouter>
         </div>

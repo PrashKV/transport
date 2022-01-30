@@ -1,64 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Base from "../core/Base";
-import { Link } from "react-router-dom";
-import { signup } from "../auth/helper";
 
-const Signup = () => {
+import { isAuthenticated} from "../auth/helper";
+import { getOneUser, updateProfile } from "./helper/userapicall";
+import { Link } from "react-router-dom";
+import {signout} from "../auth/helper"
+const UpdateUser = ({history}) => {
     const [values, setValues] = useState({
         name: "",
         email: "",
-        password: "",
+        
         error: "",
         success: false,
     });
-
-    const { name, email, password, error, success } = values;
+    const { user, token } = isAuthenticated();
+    const { name, email, error, success } = values;
 
     const handleChange = (name) => (event) => {
-        setValues({ ...values, error: false, [name]: event.target.value });
+        setValues({ ...values, error: false, [name]: event.target.value, success:false });
     };
 
+    const preload = () => {
+        getOneUser(user._id, token).then((data) => {
+           
+            if (data.error) {
+                setValues({...values, error:data.error})
+            } else {
+                setValues({
+                    ...values,
+                    name: data.name,                   
+                    email:data.email
+                })
+            }
+        });
+    };
+    useEffect(() => {
+        preload();
+    }, []);
     const onSubmit = (event) => {
         event.preventDefault();
         setValues({ ...values, error: false });
-        signup({ name, email, password })
+        updateProfile(user._id, token,{ name, email })
             .then((data) => {
+                
                 if (data.error) {
                     setValues({ ...values, error: data.error, success: false });
                 } else {
                     setValues({
                         ...values,
-                        name: "",
-                        email: "",
-                        password: "",
-                        error: "",
+                        
                         success: true,
                     });
                 }
             })
-            .catch(() => console.log("Error in signup"));
+            .catch(() => console.log("Error in user update"));
     };
 
     const successMessage = () => {
         return (
-            <div className="alert alert-success"
-                style={{ display: success ? "" : "none" }}>
-                New Account Created Successfully. Please <Link to="/signin">Login here</Link> 
+            <div
+                className="alert alert-success"
+                style={{ display: success ? "" : "none" }}
+            >
+                Update Successful! Please <Link className="link" style={{textDecoration:"none"}} onClick={() => {
+                            signout(() => {
+                                history.push("/signin");
+                            });
+                        }} to="/signin">Sign out</Link> and Sign in again for changes to appear
             </div>
-        )
-    }
+        );
+    };
     const errorMessage = () => {
         return (
-            <div className="alert alert-danger"
-                style={{ display: error ? "" : "none" }}>
-                {error} 
+            <div
+                className="alert alert-danger"
+                style={{ display: error ? "" : "none" }}
+            >
+                {error}
             </div>
-        )
-    }
+        );
+    };
 
-    const signUpForm = () => {
+    const updateForm = () => {
         return (
-            <div className="row justify-content-center" >
+            <div className="row justify-content-center">
                 <form className="col-md-7 col-sm-9">
                     <div className="form-group">
                         <input
@@ -80,17 +105,7 @@ const Signup = () => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            className="form-control boxx"
-                            onChange={handleChange("password")}
-                            placeholder="Password"
-                            value={values.password}
-                        />
-                    </div>
                     <button
-        
                         onClick={onSubmit}
                         className="btn btn-success btn-block my-3"
                     >
@@ -102,15 +117,13 @@ const Signup = () => {
     };
 
     return (
-        
-        <Base title="SIGN UP" description="A page for user to sign up!">
+        <Base title="Update User" description="Edit User Info Here!">
             {successMessage()}
             {errorMessage()}
-            {signUpForm()}
-          
-            </Base>
-          
+            {updateForm()}
+        
+        </Base>
     );
 };
 
-export default Signup;
+export default UpdateUser;

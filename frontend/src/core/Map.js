@@ -5,7 +5,9 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "../styles.css";
 import "leaflet-routing-machine";
 import Menu from "./Menu";
-import { isAuthenticated } from "../auth/helper";
+import {  isAuthenticated } from "../auth/helper";
+import { createTicket } from "../user/helper/userapicall";
+
 
 // import marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,10 +22,10 @@ L.Icon.Default.mergeOptions({
 class MapComp extends Component {
     constructor(props) {
         super(props);
-        this.cuuu = createRef();
         this.mapRef = createRef();
 
         this.state = {
+            mounted:false,
             final: [],
             doj: "",
             amt: 0,
@@ -33,6 +35,7 @@ class MapComp extends Component {
             source: "",
             destination: "",
             seats: 1,
+            error:""
         };
 
         this.go = this.go.bind(this);
@@ -41,7 +44,7 @@ class MapComp extends Component {
 
     componentDidMount() {
         //const provider = new OpenStreetMapProvider();
-
+        
         const getAllSubsets = (theArray) =>
             theArray.reduce(
                 (subsets, value) =>
@@ -63,6 +66,7 @@ class MapComp extends Component {
 
             const source = new ELG.Geosearch({
                 expanded: true,
+                position: "topleft",
                 placeholder: "Source",
                 useMapBounds: false,
                 providers: [
@@ -87,20 +91,27 @@ class MapComp extends Component {
             }).addTo(map);
             const results = new L.LayerGroup().addTo(map);
             var u = null;
+            var u1
             var source_info;
             var dest_info;
-            source.on("results", function (data) {
+            source.on("results", (data) =>{
+                
                 results.clearLayers();
+                
                 for (var i = data.results.length - 1; i >= 0; i--) {
                     source_info = data.results[i];
                     results.addLayer(L.marker(data.results[i].latlng));
                 }
-                console.log("source if", source_info);
             });
             const routeselected = new L.LayerGroup().addTo(map);
             destination.on("results", (data) => {
                 if (!source_info) alert("Enter Source!");
-
+                if (this.state.mounted) {
+                    console.log("bantoooo")
+                    u1.setWaypoints([])
+                    u.spliceWaypoints(0, 2)
+                    this.setState({error:""})
+                }
                 results.clearLayers();
                 for (var i = data.results.length - 1; i >= 0; i--) {
                     dest_info = data.results[i];
@@ -131,9 +142,12 @@ class MapComp extends Component {
                 });
 
                 u._updateLines = function () {};
-                u.on("routeselected", function (e) {
+                u.on("routeselected", (e) => {
+                    
+                    
                     routeselected.clearLayers();
-
+                    this.setState({ mounted: true })
+                    
                     var coordinates = e.route.coordinates;
                     var nearbuses = [];
 
@@ -144,7 +158,7 @@ class MapComp extends Component {
                         fetch("http://localhost:8000/api/bus/getbuses")
                             .then((response) => response.json())
                             .then((data) => {
-                                console.log(data);
+                                //console.log(data);
                                 data.forEach((bus) => {
                                     // console.log(bus)
                                     min_s = 9999999;
@@ -254,7 +268,7 @@ class MapComp extends Component {
                                         // console.log(source_bus, dest_bus)
                                     }
                                 });
-                                console.log(nearbuses);
+                                //console.log(nearbuses);
                                 select_route(nearbuses);
                             });
                     } catch (err) {
@@ -263,17 +277,17 @@ class MapComp extends Component {
                 });
 
                 u.onAdd(map);
-                map.on("click", (ev) => {
-                    const { latlng } = ev;
-                    const { lat, lng } = latlng;
-                    console.log(ev);
+                // map.on("click", (ev) => {
+                //     const { latlng } = ev;
+                //     const { lat, lng } = latlng;
+                //     console.log(ev);
 
-                    L.marker([lat, lng]).addTo(map);
-                });
+                //     L.marker([lat, lng]).addTo(map);
+                // });
 
                 const select_route = (data) => {
                     var sorted = data.sort((a, b) => {
-                        console.log(a.source_to_source);
+                        //console.log(a.source_to_source);
                         if (a.source_to_source > b.source_to_source) return 1;
                         if (a.source_to_source < b.source_to_source) return -1;
                         return 0;
@@ -283,6 +297,7 @@ class MapComp extends Component {
                     var minimum_cost = Number.MAX_SAFE_INTEGER;
                     var final_array = [];
                     var selected_index = 0;
+                    
                     if (f.length === 1) {
                         var metres = L.latLng(
                             source_info.latlng.lat,
@@ -293,12 +308,12 @@ class MapComp extends Component {
                         final_array.push({
                             name: "taxi",
                             price: Math.ceil(metres * 0.005),
-                            from: source_info.text,
-                            to: dest_info.text,
+                            source: source_info.text,
+                            destination: dest_info.text,
                         });
                         minimum_cost = Math.ceil(metres * 0.005);
 
-                        console.log(final_array);
+                       
                     } else {
                         for (i = 1; i < f.length; i++) {
                             var dedicated_array = [];
@@ -316,8 +331,8 @@ class MapComp extends Component {
                             dedicated_array.push({
                                 name: "taxi",
                                 price: Math.ceil(metres * 0.005),
-                                from: source_info.text,
-                                to: f[i][0].source.address,
+                                source: source_info.text,
+                                destination: f[i][0].source.address,
                             });
 
                             //CENTRE PART
@@ -345,8 +360,8 @@ class MapComp extends Component {
                                     dedicated_array.push({
                                         name: "taxi",
                                         price: Math.ceil(metres * 0.005),
-                                        from: f[i][j - 1].destination.address,
-                                        to: f[i][j].source.address,
+                                        source: f[i][j - 1].destination.address,
+                                        destination: f[i][j].source.address,
                                     });
 
                                     //add bus
@@ -367,8 +382,9 @@ class MapComp extends Component {
                             dedicated_array.push({
                                 name: "taxi",
                                 price: Math.ceil(metres * 0.005),
-                                from: f[i][f[i].length - 1].destination.address,
-                                to: dest_info.text,
+                                source: f[i][f[i].length - 1].destination
+                                    .address,
+                                destination: dest_info.text,
                             });
                             if (minimum_cost > dedicated_money) {
                                 final_array = dedicated_array;
@@ -377,8 +393,8 @@ class MapComp extends Component {
                             }
                         }
                     }
-                    console.log(final_array, minimum_cost, selected_index);
-                    // this.setState({ amt: minimum_cost });
+                    //
+
                     this.setState({ final: final_array });
                     this.setState({ success: 1 });
 
@@ -405,7 +421,7 @@ class MapComp extends Component {
                     //  map.removeControl(u)
                     routeselected.clearLayers();
 
-                    var u1 = L.Routing.control({
+                    u1 = L.Routing.control({
                         waypoints: _waypoints,
                         lineOptions: {
                             styles: [{ color: "blue", opacity: 1, weight: 5 }],
@@ -416,7 +432,7 @@ class MapComp extends Component {
                     }).addTo(map);
                     u1.onAdd(map);
                     // this.forceUpdate()
-
+                    
                     this.state.final.forEach((key, index) => {
                         if (key.name === "taxi") {
                             this.setState({
@@ -433,7 +449,7 @@ class MapComp extends Component {
 
     go(e) {
         e.preventDefault();
-
+        const {user, token} = isAuthenticated()
         if (!isAuthenticated()) {
             if (
                 window.confirm(
@@ -457,19 +473,57 @@ class MapComp extends Component {
                 this.state.seats > 0 &&
                 this.state.doj
             ) {
-                window.location.href = "/tickets";
+                let info = {
+                    doj: this.state.doj,
+                    seats: this.state.seats,
+                    final: this.state.final,
+                    total:
+                        this.state.taxi * Math.ceil(this.state.seats / 4) +
+                        this.state.bus * this.state.seats,
+                    source: this.state.source,
+                    destination: this.state.destination,
+                }
+                
+                createTicket(user._id, token, info)
+                    .then((data) => {
+                      
+                        if (data.error) {
+                            this.setState({ "error": data.error })
+                            console.log(this.state.error)
+                        } else {
+                            console.log("ticket success")
+                            this.setState({ "error": data.error })
+                            window.location.href = "/user/tickets"
+                        }
+                    })
+                    .catch((e) => console.log(e));
+                
             }
         }
     }
+    errorMessage = () => {
+        return (
+            <div className="alert alert-danger"
+                style={{ display: this.state.error ? "" : "none" }}>
+                {this.state.error} 
+            </div>
+        )
+    }
     min_date = () => {
         var dateobj = new Date();
+
         dateobj.setDate(new Date().getDate() + 1);
-        console.log(dateobj.toISOString().split("T")[0]);
+        dateobj.setHours(new Date().getHours() + 5);
+        dateobj.setMinutes(new Date().getMinutes() + 30);
+        // console.log(dateobj.toISOString());
         return dateobj.toISOString().split("T")[0];
     };
     handleChange = (name) => (event) => {
         this.setState({ [name]: event.target.value });
     };
+
+
+    //page render
     render() {
         const center = [14.167, 75.0403];
         return (
@@ -523,6 +577,8 @@ class MapComp extends Component {
                             <h3>{this.state.destination}</h3>
                             <div>
                                 {this.state.success ? (
+                                    <div>
+                                    {this.errorMessage()}
                                     <form onSubmit={this.go}>
                                         {/* <div className="container"> */}
                                         <div className="row mx-3">
@@ -558,7 +614,7 @@ class MapComp extends Component {
                                             </div>
                                         </div>
                                         {this.state.final.map((data) => (
-                                            <div>
+                                            <div key={data.source} className="text-capitalize">
                                                 {data.name === "taxi" ? (
                                                     <div className="taxi my-3">
                                                         <h3>
@@ -567,13 +623,17 @@ class MapComp extends Component {
                                                         <div className="container">
                                                             <div className="row ">
                                                                 <div className="col-5 adr">
-                                                                    {data.from}
+                                                                    {
+                                                                        data.source
+                                                                    }
                                                                 </div>
                                                                 <div className="col-2">
                                                                     To
                                                                 </div>
                                                                 <div className="col-5 adr">
-                                                                    {data.to}
+                                                                    {
+                                                                        data.destination
+                                                                    }
                                                                 </div>
                                                             </div>
                                                             <div className="mt-3 ms-2">
@@ -655,6 +715,8 @@ class MapComp extends Component {
                                             value="Book"
                                         />
                                     </form>
+
+                                    </div>
                                 ) : null}
                             </div>
                         </div>

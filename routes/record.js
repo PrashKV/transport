@@ -1,12 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const { addRecord, getRecordbyID , getAllRecords} = require("../controllers/record");
-const {check} = require("express-validator")
+const {
+    addRecord,
+    getAllRecordID,
+    getRecordById,
+    getARecord,
+} = require("../controllers/record");
+const { check } = require("express-validator");
 const { isSignedIn, isAuthenticated, isAdmin } = require("../controllers/auth");
 const { getUserById } = require("../controllers/user");
 
-router.param("userId", getUserById)
-
+router.param("userId", getUserById);
+router.param("recordId",getRecordById)
 //create record
 router.post(
     "/record/addrecord/:userId",
@@ -19,15 +24,20 @@ router.post(
 
 //listing records
 router.get(
-    "/record/getrecord/:userId",
+    "/records/:recordId/:userId",
     isSignedIn,
     isAuthenticated,
     isAdmin,
-    getRecordbyID
+    getARecord
 );
 
-router.get("/record/all/:userId",isSignedIn,
-isAuthenticated,
-isAdmin,getAllRecords)
+router.get(
+    "/records/:userId",
+    isSignedIn,
+    isAuthenticated,
+    isAdmin,
+    getAllRecordID
+);
+
 
 module.exports = router;

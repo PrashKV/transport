@@ -18,5 +18,9 @@ const recordSchema = new Schema({
     buses: [busRecSchema]
 });
 
+busRecSchema.virtual('reachedLimit').get(function() {
+    return this.seats === this.booked;
+});
+
 const Record = mongoose.model("Record", recordSchema)
 module.exports = Record
