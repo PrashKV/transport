@@ -59,7 +59,7 @@ const UserDashBoard = () => {
     return (
         <Base
             title="Welcome to User area"
-            description="User"
+            description="View User information here"
             className="container bg-info p-4 mt-5"
         >
             <div className="row m-2">

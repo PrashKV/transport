@@ -107,7 +107,7 @@ class MapComp extends Component {
             destination.on("results", (data) => {
                 if (!source_info) alert("Enter Source!");
                 if (this.state.mounted) {
-                    console.log("bantoooo")
+                    
                     u1.setWaypoints([])
                     u.spliceWaypoints(0, 2)
                     this.setState({error:""})
@@ -357,6 +357,7 @@ class MapComp extends Component {
                                     dedicated_money += Math.ceil(
                                         metres * 0.005
                                     );
+                                    
                                     dedicated_array.push({
                                         name: "taxi",
                                         price: Math.ceil(metres * 0.005),
@@ -417,8 +418,7 @@ class MapComp extends Component {
                     _waypoints.push(
                         L.latLng(dest_info.latlng.lat, dest_info.latlng.lng)
                     );
-                    // console.log(_waypoints);
-                    //  map.removeControl(u)
+                    
                     routeselected.clearLayers();
 
                     u1 = L.Routing.control({
@@ -489,7 +489,7 @@ class MapComp extends Component {
                       
                         if (data.error) {
                             this.setState({ "error": data.error })
-                            console.log(this.state.error)
+                            
                         } else {
                             console.log("ticket success")
                             this.setState({ "error": data.error })
@@ -613,8 +613,8 @@ class MapComp extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        {this.state.final.map((data) => (
-                                            <div key={data.source} className="text-capitalize">
+                                        {this.state.final.map((data, index) => (
+                                            <div key={index} className="text-capitalize">
                                                 {data.name === "taxi" ? (
                                                     <div className="taxi my-3">
                                                         <h3>
@@ -662,7 +662,7 @@ class MapComp extends Component {
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="bus">
+                                                    <div className="bus" key={index}>
                                                         <h3>{data.name}</h3>
                                                         <div className="container">
                                                             <div className="row align-middle">

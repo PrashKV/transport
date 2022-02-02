@@ -35,11 +35,12 @@ exports.getOneTicket = (req, res) => {
 
 exports.checkSeats = (req, res, next) => {
     console.log("in check");
-    const { _id } = req.profile;
+
     req.routedBusId = [];
     req.final = [];
     req.safe = 1;
     req.bus_full = [];
+    req.bus_NA = [];
     let temp = {};
     _.forEach(req.body.final, (value) => {
         if (value.name === "taxi") {
@@ -69,13 +70,12 @@ exports.checkSeats = (req, res, next) => {
                         const { seats, booked, name } = data[0].buses[0];
                         if (booked + Number(req.body.seats) > seats) {
                             req.bus_full.push(name);
-                            req.safe = 0;
+                            req.safe = 2;
                         }
                     } else {
                         req.safe = 0;
-                        return res.status(400).json({
-                            error: "Sorry, there aren't any buses available on selected date! Please select another day",
-                        });
+
+                        console.log("timess");
                     }
                 });
             })
@@ -91,11 +91,18 @@ exports.checkSeats = (req, res, next) => {
 };
 
 exports.updateRecord = (req, res, next) => {
-    if (req.safe == 0) {
+    console.log("update record");
+    if (req.safe === 0) {
+        return res.status(400).json({
+            error: "Sorry, there aren't any buses available on selected date! Please select another day",
+        });
+    }
+    if (req.safe === 2) {
         res.status(400).json({
             error: `Insufficient seats in ${req.bus_full}`,
         });
-    } else {
+    }
+    if (req.safe === 1) {
         let myOperations = req.routedBusId.map((id) => {
             return {
                 updateOne: {

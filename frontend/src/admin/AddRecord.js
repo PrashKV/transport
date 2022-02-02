@@ -46,7 +46,11 @@ const AddRecord = () => {
 
         //backend request
         createRecord(user._id, token, { date }).then((data) => {
-            if (data.error) {
+            console.log(data)
+            if (!data) {
+                setError("Error Creating record")
+            }
+            else if (data.error) {
                 setError(data.error);
             } else {
                 setError("");

@@ -51,7 +51,7 @@ const ViewTickets = () => {
     return (
         <Base
             title="Welcome admin"
-            description="Manage tickets here"
+            description="View tickets here"
             className=""
         >
             <Link className="btn btn-warning" to={`/admin/dashboard`}>

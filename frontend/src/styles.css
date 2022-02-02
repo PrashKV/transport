@@ -58,6 +58,7 @@ body {
     
     overflow: auto;
     /* margin:auto 0; */
+    margin-right: 2px;
     grid-column: 3;
     /* grid-row: 1/8; */
 }
