@@ -35,6 +35,8 @@ People are always in search of faster and easier means of traveling to their des
 
 ![viewRec](https://user-images.githubusercontent.com/64456676/176249540-a322d497-074b-4e79-9082-15388ec1307f.png)
 
+![bookedInfo](https://user-images.githubusercontent.com/64456676/176250041-c3dff408-aaa1-4d51-b2a1-a323d8ada677.png)
+
 
 Admin can view all the tickets. Expired tickets are coloured grey.
 
